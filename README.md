@@ -38,7 +38,7 @@ machine:
 
 dependencies:
   override:
-    - wget -i https://raw.githubusercontent.com/goodaltas/circleci-gke-scripts/1.0/scripts.txt -P ${HOME}/scripts
+    - wget -i https://raw.githubusercontent.com/goodatlas/circleci-gke-scripts/1.0/scripts.txt -P ${HOME}/scripts
     - chmod a+x ${HOME}/scripts/*.sh
     - npm install
 
