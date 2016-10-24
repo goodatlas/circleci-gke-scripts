@@ -1,4 +1,4 @@
-# circleci-gke-scripts
+# Circle CI / Google Container Engine scripts
 Helper scripts for continuous deployment with Circle CI and Google Container Engine
 
 ## Example
