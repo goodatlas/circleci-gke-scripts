@@ -3,7 +3,7 @@
 set -e
 
 run-gcr-upload() {
-  local docker_image_name="${$1:-$DOCKER_IMAGE_NAME}"
+  local docker_image_name="${1:-$DOCKER_IMAGE_NAME}"
 
   if [ -z "$docker_image_name" ]; then echo "docker image name is not specified"; exit 1; fi
 

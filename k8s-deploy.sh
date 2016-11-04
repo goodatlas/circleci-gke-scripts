@@ -35,7 +35,7 @@ run-k8s-deploy() {
   if [ -z "$deployment" ]; then echo "deployment/container name is not specified"; exit 1; fi
   if [ -z "$docker_image_name" ]; then echo "--image option is not specified"; exit 1; fi
 
-  container="${$container:-$deployment}"
+  container="${container:-$deployment}"
 
   kubectl rollout status deployment/${deployment} --namespace ${namespace} && \
     kubectl set image deployment/${deployment} ${container}=${docker_image_name}:${CIRCLE_SHA1} --namepace ${namespace}
