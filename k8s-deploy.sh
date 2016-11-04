@@ -1,30 +1,44 @@
 #!/bin/bash
 
-while [[ $# -gt 0 ]]
-do
+run-k8s-deploy() {
+  local key
+  local container
+  local docker_image_name
+  local kubernetes_namespace="default"
+
+  while [[ $# -gt 0 ]]; do
     key="$1"
 
     case $key in
-        -c|--container)
-            CONTAINER="$2"
-            shift
-            ;;
-
-        -i|--image)
-            DOCKER_IMAGE_NAME="$2"
-            shift
-            ;;
-        *)
-            DEPLOYMENT="$key"
+      -c|--container)
+        container="$2"
+        shift
         ;;
 
+      -i|--image)
+        docker_image_name="$2"
+        shift
+        ;;
+
+      --namespace)
+        kubernetes_namespace="$2"
+        shift
+        ;;
+
+      *)
+        deployment="$key"
+        ;;
     esac
     shift
-done
+  done
 
-if [ -z "$DEPLOYMENT" ]; then echo "deployment/container name is not specified"; exit 1; fi
-if [ -z "$DOCKER_IMAGE_NAME" ]; then echo "docker image name is not specified"; exit 1; fi
-[[ -z "$CONTAINER" ]] && CONTAINER="$DEPLOYMENT"
+  if [ -z "$deployment" ]; then echo "deployment/container name is not specified"; exit 1; fi
+  if [ -z "$docker_image_name" ]; then echo "--image option is not specified"; exit 1; fi
 
-kubectl rollout status deployment/${DEPLOYMENT} && \
-    kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
+  container="${$container:-$deployment}"
+
+  kubectl rollout status deployment/${deployment} --namespace ${namespace} && \
+    kubectl set image deployment/${deployment} ${container}=${docker_image_name}:${CIRCLE_SHA1} --namepace ${namespace}
+}
+
+run-k8s-deploy "$@"
