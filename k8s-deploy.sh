@@ -4,7 +4,7 @@ run-k8s-deploy() {
   local key
   local container
   local docker_image_name="$DOCKER_IMAGE_NAME"
-  local kubernetes_namespace="default"
+  local namespace="default"
 
   while [[ $# -gt 0 ]]; do
     key="$1"
@@ -21,7 +21,7 @@ run-k8s-deploy() {
         ;;
 
       --namespace)
-        kubernetes_namespace="$2"
+        namespace="$2"
         shift
         ;;
 
