@@ -38,7 +38,7 @@ run-k8s-deploy() {
   container="${container:-$deployment}"
 
   kubectl rollout status deployment/${deployment} --namespace ${namespace} && \
-    kubectl set image deployment/${deployment} ${container}=${docker_image_name}:${CIRCLE_SHA1} --namepace ${namespace}
+    kubectl set image deployment/${deployment} --namepace ${namespace} ${container}=${docker_image_name}:${CIRCLE_SHA1}
 }
 
 run-k8s-deploy "$@"
