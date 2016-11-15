@@ -9,7 +9,7 @@ run-gcr-upload() {
 
   echo "Building docker image..."
   docker build -t ${docker_image_name}:${CIRCLE_SHA1} .
-  docker tag ${docker_image_name}:${CIRCLE_SHA1} ${docker_image_name}:latest-${CIRCLE_BRANCH}
+  docker tag ${docker_image_name}:${CIRCLE_SHA1} ${docker_image_name}:latest
 
   echo "Pushing image to registry..."
   sudo /opt/google-cloud-sdk/bin/gcloud docker -- push ${docker_image_name}
