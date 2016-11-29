@@ -3,7 +3,7 @@
 run-k8s-deploy() {
   local key
   local container
-  local docker_image_name="$DOCKER_IMAGE_NAME"
+  local docker_tagged_image
   local namespace="default"
 
   while [[ $# -gt 0 ]]; do
@@ -15,8 +15,8 @@ run-k8s-deploy() {
         shift
         ;;
 
-      -i|--image)
-        docker_image_name="$2"
+      -t|--tagged-image)
+        docker_tagged_image="$2"
         shift
         ;;
 
@@ -32,14 +32,14 @@ run-k8s-deploy() {
     shift
   done
 
-  if [ -z "$deployment" ]; then echo "deployment/container name is not specified"; exit 1; fi
-  if [ -z "$docker_image_name" ]; then echo "--image option is not specified"; exit 1; fi
+  if [ -z "$deployment" ]; then echo "deployment/container name is required"; exit 1; fi
+  if [ -z "$docker_tagged_image" ]; then echo "--tag option is required"; exit 1; fi
 
   container="${container:-$deployment}"
 
-  echo "Performing rolling update for deployment $deployment using image ${docker_image_name}:${CIRCLE_SHA1}"
+  echo "Performing rolling update for deployment $deployment using image ${docker_tagged_image}"
   (kubectl rollout status deployment/${deployment} --namespace ${namespace} && \
-    kubectl set image deployment/${deployment} --namespace ${namespace} ${container}=${docker_image_name}:${CIRCLE_SHA1}) || \
+    kubectl set image deployment/${deployment} --namespace ${namespace} ${container}=${docker_tagged_image}) || \
     echo "Warning: Ignoring rolling update"
 }
 

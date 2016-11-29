@@ -7,6 +7,8 @@ run-gcr-upload() {
   local build_script=
   local docker_images=()
   local docker_image
+  local docker_image_latest_tag
+  local docker_image_tag
 
   while [[ $# -gt 0 ]]; do
     key="$1"
@@ -21,23 +23,35 @@ run-gcr-upload() {
         docker_images+=("$2")
         shift
         ;;
+
+      -t|--tag)
+        docker_image_tag="$2"
+        shift
+        ;;
+
+      -lt|--latest-tag)
+        docker_image_latest_tag="$2"
+        shift
+        ;;
     esac
     shift
   done
 
-  if [[ ${#docker_images[@]} -eq 0 && -n "$DOCKER_IMAGE_NAME" ]]; then
-    docker_images+=("$DOCKER_IMAGE_NAME")
-  elif [[ ${#docker_images[@]} -eq 0 && -z "$DOCKER_IMAGE_NAME" ]]; then
-    echo "docker images not specified"
+  if [[ ${#docker_images[@]} -eq 0 ]]; then
+    echo "At least one docker image is required"
     exit 1
   fi
 
   if [[ -n "$build_script" ]]; then
     $build_script
+  elif [[ -z "$docker_image_tag" || -z "$docker_image_latest_tag" ]]; then
+    echo "Docker image tags are required"
+    exit 1
   else
     for docker_image in "${docker_images[@]}"; do
-      echo "Building docker image: $docker_image..."
-      docker build -t ${docker_image}:${CIRCLE_SHA1} .
+      echo "Building docker image: ${docker_image}:${docker_image_tag}..."
+      docker build -t ${docker_image}:${docker_image_tag} .
+      docker tag ${docker_image}:${docker_image_tag} ${docker_image}:${docker_image_latest_tag}
     done
   fi
 
