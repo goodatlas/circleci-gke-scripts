@@ -37,8 +37,10 @@ run-k8s-deploy() {
 
   container="${container:-$deployment}"
 
-  kubectl rollout status deployment/${deployment} --namespace ${namespace} && \
-    kubectl set image deployment/${deployment} --namespace ${namespace} ${container}=${docker_image_name}:${CIRCLE_SHA1}
+  echo "Performing rolling update for deployment $deployment using image ${docker_image_name}:${CIRCLE_SHA1}"
+  (kubectl rollout status deployment/${deployment} --namespace ${namespace} && \
+    kubectl set image deployment/${deployment} --namespace ${namespace} ${container}=${docker_image_name}:${CIRCLE_SHA1}) || \
+    echo "Warning: Ignoring rolling update"
 }
 
 run-k8s-deploy "$@"
